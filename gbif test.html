@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Map Example</title>
+
+  <!-- Include Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <style>
+    /* Style for the map container */
+    #map {
+      height: 600px; /* Adjust the height of the map */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Interactive Map Example</h1>
+  <div id="map"></div> <!-- Map container -->
+
+  <!-- Include Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Include the script that loads map data (e.g., event data from the API) -->
+  <script defer data-domain="gbif.org" data-api="/spoor/api/event" src="/spoor/js/script.js"></script>
+
+  <script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13); // Coordinates for London, zoom level 13
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add a simple marker
+    var marker = L.marker([51.505, -0.09]).addTo(map);
+
+    // Add a popup to the marker
+    marker.bindPopup("<b>Hello world!</b><br>This is a simple marker.").openPopup();
+  </script>
+
+</body>
+</html>
