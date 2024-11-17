@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Species Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .bg-image {
+      background-image: url("home.jpeg");
+      filter: blur(8px);
+      -webkit-filter: blur(8px);
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .bg-text {
+      background-color: rgba(0, 0, 0, 0.4); 
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+	   display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+
+    /* Apply white text with green outline effect to all nav and labels */
+    .outlined-text {
+      color: white;
+      text-shadow: 0 0 5px green, 0 0 10px green, 0 0 15px green;
+      font-weight: bold;
+    }
+    /* Styling for the active page link */
+      nav a.active {
+      border: 2px solid #48bb78; /* Green border */
+      padding: 6px 10px; /* Adjust padding to make room for the border */
+      border-radius: 0.375rem;
+       background-color: rgba(72, 187, 120, 0.2); /* Optional light background */
+	   pointer-events: none; /* Disables hover/click interactions */
+       
+    }
+     /* Hover effects for non-active links */
+     nav a:not(.active):hover {
+     color: #48bb78; /* Color on hover */
+    
+   }
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px green, 0 0 10px green, 0 0 15px green;
+    }
+	
+    h2 {
+      font-size: 1.7rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px green, 0 0 10px green, 0 0 15px green;
+    }
+
+    /* Search boxes with transparent background and green border */
+      
+	
+    .dropdown input {
+      background-color: transparent;
+      border: 1px solid #48bb78; /* Green border */
+      color: white;
+      text-shadow: 0 0 5px green, 0 0 10px green, 0 0 15px green;
+    }
+
+    .dropdown input::placeholder {
+      color: white; /* Placeholder text color */
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: transparent;
+      min-width: 20%;
+       box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+    }
+	#country-dropdown{
+	min-width: 20%;
+	
+}
+    .dropdown-content a {
+      color: #F6E96B;
+      padding: 8px 12px;
+      display: block;
+	    background-color: #62825D;
+		font-size: 14px
+    }
+
+    .dropdown-content a:hover {
+     
+	  font-size: 19px;
+    }
+
+    .show { display: block; }
+
+   /* .map {
+      background-image: url('europemap.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 440px;
+	  width:900px;
+	  left:10%;
+      position: relative;
+      border-radius: 0.375rem;
+    }*/
+	 .map {
+      height: 440px;
+      width: 100%;
+      border-radius: 0.375rem;
+	  z-index:1;
+    }
+        .show {
+  display: block;
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+}
+    .map-point {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background-color: #ff6347;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      color: green;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .map-point:hover {
+      transform: scale(1.5);
+      background-color: #ff4500;
+    }
+
+    .modal {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, backdrop-filter 0.5s ease; /* Smooth fade-in and blur effect */
+}
+
+.modal.show { 
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background-color: #8FD14F;
+  padding: 20px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 600px;
+  border-radius: 0.375rem;
+  transition: transform 0.4s ease; /* Smooth scale effect */
+}
+
+.modal.show .modal-content {
+  transform: translate(-50%, -50%) scale(1); /* Scale to normal size */
+}
+
+
+    .close-btn {
+      color: #333;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body class="bg-green-100 font-sans">
+  <div class="bg-image"></div>
+  <div class="bg-text">
+    <div class="container mx-auto p-4">
+      <header class="flex items-center justify-between p-4 shadow-md rounded-md">
+        <h1 class="outlined-text font-bold text-green-900 outlined-text">
+          Plant Species Prediction
+        </h1>
+        <nav>
+          <a href="#home" class="outlined-text hover:text-green-900 px-4 active"style="font-size:140%;">Home</a>
+          <a href="about.html" class="outlined-text hover:text-green-900 px-4"style="font-size:140%;">About</a>
+        </nav>
+      </header>
+
+      <!-- Map Section and Search -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <section class="md:col-span-3 p-4 rounded-md shadow-md" id="home">
+          <h2 class="outlined-text  font-semibold mb-4">Map Area</h2>
+         <!-- <div class="map">
+            <div class="map-point" style="top: 50%; left: 42%;" title="Denmark" onclick="selectRegion('Denmark')">Denmark</div>
+            <div class="map-point" style="top: 30%; left: 46%;" title="Sweden" onclick="selectRegion('Sweden')">Sweden</div>
+            <div class="map-point" style="top: 60%; left: 45%;" title="Netherlands" onclick="selectRegion('Netherlands')">Netherlands</div>
+            <div class="map-point" style="top: 70%; left: 35%;" title="France" onclick="selectRegion('France')">France</div>
+          </div>-->
+		   <div id="map" class="map"style="height: 440px;"></div>
+
+          
+        </section>
+
+        <aside class="p-4 rounded-md shadow-md">
+		<div class="mt-4 dropdown">
+           <h2 class="outlined-text font-semibold ">Select Country/Region:</h2>
+            <input type="text" id="country-search" placeholder="Search countries..." class="w-full p-2 border border-green-800 rounded-md mb-4" onkeyup="filterCountries()">
+            <div id="country-dropdown" class="dropdown-content">
+               <a href="#" onclick="selectRegion('Denmark')">Denmark</a>
+              <a href="#" onclick="selectRegion('Germany')">Germany</a>
+              <a href="#" onclick="selectRegion('Poland')">Poland</a>
+              <a href="#" onclick="selectRegion('France')">France</a>
+              <a href="#" onclick="selectRegion('Norway')">Norway</a>
+              <a href="#" onclick="selectRegion('Sweden')">Sweden</a>
+              <a href="#" onclick="selectRegion('Finland')">Finland</a>
+              <a href="#" onclick="selectRegion('Iceland')">Iceland</a>
+            </div>
+          </div>
+		  <br>
+		  <br>
+		  <br>
+		  
+          <h2 class="outlined-text  font-semibold mb-4">Plant Selection</h2>
+          <div class="dropdown">
+            <input type="text" id="plant-search" placeholder="Search plants..." class="w-full p-2 border border-green-300 rounded-md mb-4" onkeyup="filterPlants()">
+           
+		   <div id="plant-dropdown" class="dropdown-content">
+               <a href="#" onclick="selectPlant('Sage')">Sage</a>
+              <a href="#" onclick="selectPlant('Sunflower')">Sunflower</a>
+              <a href="#" onclick="selectPlant('Lily')">Lily</a>
+              <a href="#" onclick="selectPlant('Lavender')">Lavender</a>
+              <a href="#" onclick="selectPlant('Rose')">Rose</a>
+              <a href="#" onclick="selectPlant('Tulip')">Tulip</a>
+              <a href="#" onclick="selectPlant('Cactus')">Cactus</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+        <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">×</span>
+      <h2>Information</h2>
+      <p id="modal-message">You have selected a country. Please choose a plant species.</p>
+    </div>
+  </div>
+      <!-- Modal -->
+      <div id="overlay-container" class="overlay-container">
+        <div id="plant-modal" class="modal">
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="selected-plant" class="font-semibold mb-4"></h2>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center">
+                <p class="font-semibold text-green-700">Temperature</p>
+                <p class="text-gray-700">18°C</p>
+              </div>
+			  <div class="text-center">
+            <p class="font-semibold text-green-700">Humidity</p>
+            <p class="text-gray-700">35%</p>
+          </div>
+          <div class="text-center">
+            <p class="font-semibold text-green-700">Soil Type</p>
+            <p class="text-gray-700">Loamy</p>
+          </div>
+          <div class="text-center">
+            <p class="font-semibold text-green-700">Sunlight</p>
+            <p class="text-gray-700">Partial Sun</p>
+          </div>
+          <div class="col-span-2 mt-4">
+            <p class="font-semibold text-green-700">Prediction Results</p>
+            <div class="h-32 bg-green-200 rounded-md flex items-center justify-center">
+              <p class="text-gray-700">[Prediction Graph Placeholder]</p>
+            </div>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+   //function initializeMap() {
+  // Set map to a default view (latitude, longitude, and zoom level)
+ // const map = L.map('map').setView([56.2639, 9.5018], 7);  // Center map on Denmark
+        var map = L.map('map').setView([56.2639, 9.5018], 7);  // Center map on Denmark
+
+  // Add a tile layer (map style)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+	
+	var marker;
+        
+        // Event listener for click event
+        map.on('click', function(e) {
+            if (marker) {
+                map.removeLayer(marker);  // Remove the previous marker
+            }
+            
+            var lat = e.latlng.lat;
+            var lon = e.latlng.lng;
+            
+            marker = L.marker([lat, lon]).addTo(map);  // Add new marker
+            console.log('Latitude: ' + lat + ', Longitude: ' + lon);  // Capture coordinates
+            
+            // Call backend prediction function here
+            getPrediction(lat, lon);
+});
+     // Function to call your backend API
+        async function getPrediction(lat, lon) {
+            const response = await fetch('H:\Aalborg\1st semester PROJECT\group\ml', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ lat: lat, lon: lon })
+            });
+            const data = await response.json();
+            displayPrediction(data);  // Display the prediction on the webpage
+        }
+
+        // Display the prediction result
+        function displayPrediction(data) {
+            if (data.canBeFound) {
+                alert("Yes, the flower can be found here!");
+            } else {
+                alert("No, the flower cannot be found here.");
+            }
+        }
+
+// Initialize map on page load
+document.addEventListener("DOMContentLoaded", initializeMap);
+
+// Add more markers for other countries as needed
+    // You can adjust the latitudes and longitudes for your map region
+  let selectedRegion = null;
+  let selectedPlant = null;
+
+  function filterPlants() {
+    const input = document.getElementById("plant-search").value.toUpperCase();
+    const dropdown = document.getElementById("plant-dropdown");
+    const options = dropdown.getElementsByTagName("a");
+    dropdown.classList.add("show");
+    for (let i = 0; i < options.length; i++) {
+      const txtValue = options[i].textContent || options[i].innerText;
+      options[i].style.display = txtValue.toUpperCase().startsWith(input) ? "" : "none";
+    }
+  }
+
+  function filterCountries() {
+    const input = document.getElementById("country-search").value.toUpperCase();
+    const dropdown = document.getElementById("country-dropdown");
+    const options = dropdown.getElementsByTagName("a");
+    dropdown.classList.add("show");
+    for (let i = 0; i < options.length; i++) {
+      const txtValue = options[i].textContent || options[i].innerText;
+      options[i].style.display = txtValue.toUpperCase().startsWith(input) ? "" : "none";
+    }
+  }
+
+  function selectRegion(regionName) {
+    selectedRegion = regionName;
+    document.getElementById("country-search").value = regionName;
+    document.getElementById("country-dropdown").classList.remove("show");
+
+    // Check if both region and plant are selected
+    if (selectedRegion && selectedPlant) {
+      showModal();
+    }
+  }
+
+  function selectPlant(plantName) {
+    selectedPlant = plantName;
+    document.getElementById("plant-search").value = plantName;
+    document.getElementById("plant-dropdown").classList.remove("show");
+
+    // Check if both region and plant are selected
+    if (selectedRegion && selectedPlant) {
+      showModal();
+    }
+  }
+function showModal() {
+  document.getElementById("selected-plant").textContent = "Plant: " + selectedPlant + " | Region: " + selectedRegion;
+  const modal = document.getElementById("plant-modal");
+  modal.classList.add("show"); // Show with fade-in
+}
+
+function closeModal() {
+  const modal = document.getElementById("plant-modal");
+  modal.classList.remove("show"); // Start fade-out
+}
+
+  
+</script>
+    
+    
+
+</body>
+</html>
