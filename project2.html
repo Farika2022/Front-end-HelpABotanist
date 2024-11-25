@@ -1,0 +1,190 @@
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .flora-finder-container {
+    background-color: #FFFDFA;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    align-items: center;
+    font-family: Albert Sans, sans-serif;
+    color: #000;
+    padding: 87px 60px 143px;
+  }
+
+  .app-title {
+    color: #373737;
+    font-size: 40px;
+    font-weight: 600;
+  }
+
+  .app-description {
+    font-size: 20px;
+    margin-top: 19px;
+  }
+
+  .search-container {
+    display: flex;
+    margin-top: 38px;
+    width: 751px;
+    max-width: 100%;
+    gap: 20px;
+    font-size: 14px;
+    color: #656565;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .search-input-wrapper {
+    border-radius: 10px;
+    background-color: #FFF;
+    display: flex;
+    gap: 40px 100px;
+    overflow: hidden;
+    padding: 19px 21px;
+    border: 1px solid #41B3A2;
+  }
+
+  .location-input-wrapper {
+    border-radius: 10px;
+    background-color: #FFF;
+    display: flex;
+    gap: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 22px 12px;
+    border: 1px solid #41B3A2;
+  }
+
+  .search-button {
+    border-radius: 10px;
+    background-color: #41B3A2;
+    color: #FFF;
+    padding: 21px 10px;
+    border: none;
+    cursor: pointer;
+    min-height: 59px;
+  }
+
+  .map-image {
+    aspect-ratio: 2.46;
+    object-fit: contain;
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 52px;
+    max-width: 1280px;
+  }
+
+  .divider {
+    background-color: #D9D9D9;
+    align-self: stretch;
+    height: 3px;
+    margin-top: 54px;
+  }
+
+  .results-title {
+    font-size: 20px;
+    font-weight: 600;
+    align-self: start;
+    margin: 33px 0 0 20px;
+  }
+
+  .results-message {
+    border-radius: 10px;
+    background-color: #FFF;
+    margin-top: 16px;
+    width: 1280px;
+    max-width: 100%;
+    font-size: 16px;
+    padding: 33px 16px;
+    border: 1px solid #000;
+  }
+
+  .search-icon {
+    aspect-ratio: 1;
+    width: 24px;
+  }
+
+  .location-icon {
+    aspect-ratio: 1;
+    width: 16px;
+    align-self: start;
+  }
+
+  @media (max-width: 991px) {
+    .flora-finder-container {
+      padding: 0 20px 100px;
+    }
+
+    .app-description {
+      max-width: 100%;
+    }
+
+    .search-input-wrapper {
+      padding-left: 20px;
+    }
+
+    .location-input-wrapper {
+      white-space: initial;
+    }
+
+    .search-button {
+      white-space: initial;
+    }
+
+    .map-image {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+
+    .divider {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+
+    .results-title {
+      margin-left: 10px;
+    }
+
+    .results-message {
+      padding-right: 20px;
+    }
+  }
+</style>
+
+<section class="flora-finder-container">
+  <h1 class="app-title">FloraFinder</h1>
+  <p class="app-description">Explore plant species and see where they're most likely to grow based on location</p>
+  
+  <form class="search-container" role="search">
+    <div class="search-input-wrapper">
+      <label for="species-search" class="visually-hidden">Search plant species</label>
+      <input type="search" id="species-search" placeholder="Search plant species" aria-label="Search plant species">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5dc10ca68a23ca1ae434ff0d181a403079fd7d989c56eea423a92babb67262ec?placeholderIfAbsent=true&apiKey=6d6aacdca8dc4a24a997310ac9111ad7" alt="" class="search-icon" aria-hidden="true">
+    </div>
+    
+    <div class="location-input-wrapper">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/894ff58cbc8e191e96ef75096973f4cfd0a785948fa6e8978f8acf742398f2f5?placeholderIfAbsent=true&apiKey=6d6aacdca8dc4a24a997310ac9111ad7" alt="" class="location-icon" aria-hidden="true">
+      <label for="location-input" class="visually-hidden">Location</label>
+      <input type="text" id="location-input" placeholder="Location" aria-label="Location">
+    </div>
+    
+    <button type="submit" class="search-button">Search</button>
+  </form>
+
+  <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/99ed212c810a58fb0f08857ba430a4482323dddc7a97ef0b693b707e9422e84a?placeholderIfAbsent=true&apiKey=6d6aacdca8dc4a24a997310ac9111ad7" alt="Interactive map for plant location predictions" class="map-image">
+  
+  <div class="divider" role="separator"></div>
+  
+  <h2 class="results-title">Prediction Results</h2>
+  <p class="results-message">Select a location on the map to view predictions</p>
+</section>
